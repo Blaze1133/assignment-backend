@@ -20,21 +20,38 @@ app.get("/bfhl", (req, res) => {
   res.status(200).json({ operation_code: 1 });
 });
 
-// POST endpoint
 app.post("/bfhl", (req, res) => {
   try {
     const { data } = req.body;
+
     if (!data || !Array.isArray(data)) {
       return res
         .status(400)
         .json({ is_success: false, message: "Invalid input" });
     }
 
-    const numbers = data.filter((item) => !isNaN(item));
-    const alphabets = data.filter((item) => /^[A-Za-z]$/.test(item));
-    const highestAlphabet =
-      alphabets.length > 0 ? [alphabets.sort().pop()] : [];
+    // Extract user details
+    const USER_DETAILS = {
+      user_id: "john_doe_17091999",
+      email: "john@xyz.com",
+      roll_number: "ABCD123",
+    };
 
+    // Filter numbers and alphabets
+    const numbers = data.filter((item) => !isNaN(item)).map(String);
+    const alphabets = data.filter((item) => /^[A-Za-z]$/.test(item));
+
+    // Find the highest alphabet (case insensitive, but return as given in input)
+    const highestAlphabet =
+      alphabets.length > 0
+        ? [
+            alphabets.reduce((max, curr) =>
+              curr.toLowerCase() > max.toLowerCase() ? curr : max
+            ),
+          ]
+        : [];
+
+    // Construct and send response
     res.json({
       is_success: true,
       ...USER_DETAILS,
